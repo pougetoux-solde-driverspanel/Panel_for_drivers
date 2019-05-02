@@ -3,6 +3,7 @@
 #include <ESP8266WebServer.h>
 #include <ESP8266mDNS.h>
 #include <PxMatrix.h>
+#include <Arduino_JSON.h>
 #include <FS.h>
 #include "DefaultImages.h"
 
@@ -227,7 +228,7 @@ const char MAIN_page[] PROGMEM = R"=====(
                 $.ajax({
                   type: "POST",
                   url: "http://192.168.43.38/modify",
-                  data: {"selected": buttonid, "colors": JSON.stringify(colors)}
+                  data: {"selected": buttonid, "colors": "{obj :" + JSON.stringify(colors) + "}"}
                 });
             }
 
@@ -378,7 +379,20 @@ void setup(void) {
   });
 
   server.on("/modify", HTTP_POST, []() {
-    Serial.println(server.arg(1));
+    Serial.println(server.arg(0)); //button iD
+    Serial.println(server.arg(1)); // image : ligne 0 = color
+    JSONVar imageJSON = JSON.parse(server.arg(1));
+    if (JSON.typeof(imageJSON) == "undefined") {
+      Serial.println("Parsing input failed!");
+      
+    }
+
+    Serial.println("NIQUE");
+    Serial.println(imageJSON);
+    Serial.println(imageJSON[0]);
+    Serial.println("NIQUE");
+    
+    
   });
 
   server.onNotFound(handleNotFound);
