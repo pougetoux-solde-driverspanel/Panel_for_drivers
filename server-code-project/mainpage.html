@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script>
+            $(document).ready(function(){
+                $("p").click(function(){
+                    $(this).hide();
+                });
+            });
+        </script>
+    </head>
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0px;
+        }
+
+        #buttons-column { 
+            width: 50%;
+            margin-left: 25%;
+            padding-top: 10%;
+            height: 40%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .buttons-row {
+            display: flex;
+            flex: 1;
+        }
+
+        .spebutton {
+            margin: 10px;
+            flex-basis: 30%;
+            flex: 1;
+        }
+
+        #footer{
+            background:#ccc;
+            position:absolute;
+            bottom:0;
+            width:100%;
+            height:5%;
+            padding-top: 1%;
+            padding-bottom: 1%;
+            text-align: center;
+        }
+        
+        .editbutton {
+            width: 15%;
+            height:80%;
+        }
+
+    </style>
+    <body>
+        <div id="buttons-column">
+            <div class="buttons-row">
+                <button class="spebutton" id="button1">1</button>
+                <button class="spebutton" id="button2">2</button>
+                <button class="spebutton" id="button3">3</button>
+            </div>
+            <div class="buttons-row">
+                <button class="spebutton" id="button4">4</button>
+                <button class="spebutton" id="button5">5</button>
+                <button class="spebutton" id="button6">6</button>
+            </div>
+        </div>
+
+        <div id="footer">
+            <button class="editbutton" id="edit-button1">edit 1</button>
+            <button class="editbutton" id="edit-button2">edit 2</button>
+            <button class="editbutton" id="edit-button3">edit 3</button>
+            <button class="editbutton" id="edit-button4">edit 4</button>
+            <button class="editbutton" id="edit-button5">edit 5</button>
+            <button class="editbutton" id="edit-button6">edit 6</button>
+        </div>
+    </body>
+</html>
