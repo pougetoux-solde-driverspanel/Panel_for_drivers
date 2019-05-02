@@ -83,16 +83,17 @@ void setup() {
                          0xe66465, 0x4FE0, 0x4FE0, 0xe66465,
                          0x4FE0, 0xe66465, 0xe66465, 0x4FE0,
                          0x4FE0, 0x4FE0, 0x4FE0, 0x4FE0};
-//  drawImage(0, 0, image1, 4, 9);
-  drawImage(0, 0, THUMBSUP, 32, 32);
+//  drawImage(0, 0, image1);
+  drawImage(0, 0, THUMBSUP);
   delay(500);
 }
 
 
-void drawImage(int x, int y, uint16_t *image, int width, int height)
+void drawImage(int x, int y, uint16_t *image)
 {
   
-  int counter = 0;
+  int width = 32;
+  int height = 32;
   
   for (int xx = 0; xx < height * width; xx++)
   {
