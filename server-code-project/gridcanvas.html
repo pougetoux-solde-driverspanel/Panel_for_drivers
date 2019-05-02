@@ -33,10 +33,27 @@
                 context.strokeStyle='black';
                 context.stroke();
             }
+
+            function getCoords(el,event) {
+                var ox = -el.offsetLeft,
+                    oy = -el.offsetTop;
+                while(el=el.offsetParent){
+                    ox += el.scrollLeft - el.offsetLeft;
+                    oy += el.scrollTop - el.offsetTop;
+                }
+                return {x:event.clientX + ox , y:event.clientY + oy};
+            }
+            
+            function getCoordsForGridProps(coords, sizeForOneCase) {
+                return {x: Math.ceil(coords.x / sizeForOneCase), y: Math.ceil(coords.y / sizeForOneCase)};
+            }
+
             drawBoard();
             $(document).ready(function(){
-                $("#mycanvas").click(function(){
-                    
+                $("#mycanvas").click(function(e){
+                    coords = getCoords(this,e);
+                    coords = getCoordsForGridProps(coords, cw / 32);
+                    console.log(coords);
                 });
             });
         </script>
