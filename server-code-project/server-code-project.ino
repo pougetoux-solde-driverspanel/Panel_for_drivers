@@ -238,6 +238,9 @@ void drawImage(int x, int y, uint16_t *image)
   {
     display.drawPixel(xx % width + x , xx / width + y, image[xx]);
   }
+  delay(5000);
+  display.clearDisplay();
+  
   
 }
 void handleNotFound() {
