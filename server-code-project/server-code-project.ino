@@ -3,10 +3,8 @@
 #include <ESP8266WebServer.h>
 #include <ESP8266mDNS.h>
 #include <PxMatrix.h>
-#include <Arduino_JSON.h>
-#include <FS.h>
 #include "DefaultImages.h"
-
+#include <Arduino_JSON.h>
 #ifndef STASSID
 #define STASSID "Private123"
 #define STAPSK  "19911991"
@@ -204,23 +202,20 @@ const char MAIN_page[] PROGMEM = R"=====(
             function saveschema() {
                 var buttonid = $("#selectedbutton").val();
 
-                var colors = [];
+                var colors = "";
                 
-                colors.push($("#colorpicker")[0].value);
-
                 for(var i = 0; i < 32; i++) {
-                    var row = [];
                     for(var j = 0; j < 32; j++) {
                         var color = $("#griddiv")[0].children[0].children[i].children[j].style.backgroundColor;
                         if(color == "") {
-                            color = 0;
+                            color = "0";
                         }
                         else {
-                            color = 1;
+                            color = "1";
                         }
-                        row.push(color);
+
+                        colors += (color + ",");
                     }
-                    colors.push(row);
                 }
                 
                 console.log(colors);
@@ -228,7 +223,7 @@ const char MAIN_page[] PROGMEM = R"=====(
                 $.ajax({
                   type: "POST",
                   url: "http://192.168.43.38/modify",
-                  data: {"selected": buttonid, "colors": "{obj :" + JSON.stringify(colors) + "}"}
+                  data: {"selected": buttonid, "color": $("#colorpicker")[0].value, "colors": JSON.stringify(colors)}
                 });
             }
 
@@ -275,7 +270,7 @@ void drawImage(int x, int y, uint16_t *image)
   
   
 }
-void drawImageMonoColor(int x, int y, int *image, uint16_t color)
+void drawImageMonochrome(int x, int y, int *image, uint16_t color)
 {
   
   int width = 32;
@@ -283,9 +278,10 @@ void drawImageMonoColor(int x, int y, int *image, uint16_t color)
   
   for (int xx = 0; xx < height * width; xx++)
   {
-    if (image[xx] == 1)
-    {
+    Serial.println(image[xx]);
+    if (image[xx] == 1) {
       display.drawPixel(xx % width + x , xx / width + y, color);
+       //Serial.println("CA DOIT AFFICHER UN TRUC");
     }
     
   }
@@ -379,20 +375,18 @@ void setup(void) {
   });
 
   server.on("/modify", HTTP_POST, []() {
-    Serial.println(server.arg(0)); //button iD
-    Serial.println(server.arg(1)); // image : ligne 0 = color
-    JSONVar imageJSON = JSON.parse(server.arg(1));
-    if (JSON.typeof(imageJSON) == "undefined") {
-      Serial.println("Parsing input failed!");
+    Serial.println(server.arg(1));
+    Serial.println(server.arg(2));
+    uint16_t image[1024];
+    for (int i = 0; i < 1024; ++i)
+    {
+      if ((int)(server.arg(2)[2*i+1]) - 48 == 0)
+        image[i]=0;
+      else
+        image[i]=0x07E0;
       
     }
-
-    Serial.println("NIQUE");
-    Serial.println(imageJSON);
-    Serial.println(imageJSON[0]);
-    Serial.println("NIQUE");
-    
-    
+    drawImage(0, 0, image);
   });
 
   server.onNotFound(handleNotFound);
