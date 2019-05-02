@@ -3,6 +3,7 @@
 #include <ESP8266WebServer.h>
 #include <ESP8266mDNS.h>
 #include <PxMatrix.h>
+#include <FS.h>
 #include "DefaultImages.h"
 
 #ifndef STASSID
@@ -237,6 +238,25 @@ void drawImage(int x, int y, uint16_t *image)
   for (int xx = 0; xx < height * width; xx++)
   {
     display.drawPixel(xx % width + x , xx / width + y, image[xx]);
+  }
+  delay(5000);
+  display.clearDisplay();
+  
+  
+}
+void drawImageMonoColor(int x, int y, int *image, uint16_t color)
+{
+  
+  int width = 32;
+  int height = 32;
+  
+  for (int xx = 0; xx < height * width; xx++)
+  {
+    if (image[xx] == 1)
+    {
+      display.drawPixel(xx % width + x , xx / width + y, color);
+    }
+    
   }
   delay(5000);
   display.clearDisplay();
