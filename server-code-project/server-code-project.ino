@@ -3,7 +3,6 @@
 #include <ESP8266WebServer.h>
 #include <ESP8266mDNS.h>
 #include <PxMatrix.h>
-#include <FS.h>
 #include "DefaultImages.h"
 
 #ifndef STASSID
@@ -203,23 +202,20 @@ const char MAIN_page[] PROGMEM = R"=====(
             function saveschema() {
                 var buttonid = $("#selectedbutton").val();
 
-                var colors = [];
+                var colors = "";
                 
-                colors.push($("#colorpicker")[0].value);
-
                 for(var i = 0; i < 32; i++) {
-                    var row = [];
                     for(var j = 0; j < 32; j++) {
                         var color = $("#griddiv")[0].children[0].children[i].children[j].style.backgroundColor;
                         if(color == "") {
-                            color = 0;
+                            color = "0";
                         }
                         else {
-                            color = 1;
+                            color = "1";
                         }
-                        row.push(color);
+
+                        colors += (color + ",");
                     }
-                    colors.push(row);
                 }
                 
                 console.log(colors);
@@ -227,7 +223,7 @@ const char MAIN_page[] PROGMEM = R"=====(
                 $.ajax({
                   type: "POST",
                   url: "http://192.168.43.38/modify",
-                  data: {"selected": buttonid, "colors": JSON.stringify(colors)}
+                  data: {"selected": buttonid, "color": $("#colorpicker")[0].value, "colors": JSON.stringify(colors)}
                 });
             }
 
@@ -268,25 +264,6 @@ void drawImage(int x, int y, uint16_t *image)
   for (int xx = 0; xx < height * width; xx++)
   {
     display.drawPixel(xx % width + x , xx / width + y, image[xx]);
-  }
-  delay(5000);
-  display.clearDisplay();
-  
-  
-}
-void drawImageMonoColor(int x, int y, int *image, uint16_t color)
-{
-  
-  int width = 32;
-  int height = 32;
-  
-  for (int xx = 0; xx < height * width; xx++)
-  {
-    if (image[xx] == 1)
-    {
-      display.drawPixel(xx % width + x , xx / width + y, color);
-    }
-    
   }
   delay(5000);
   display.clearDisplay();
