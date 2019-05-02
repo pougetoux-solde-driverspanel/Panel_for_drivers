@@ -2,12 +2,40 @@
 #include <WiFiClient.h>
 #include <ESP8266WebServer.h>
 #include <ESP8266mDNS.h>
+#include <PxMatrix.h>
+#include "DefaultImages.h"
 
 #ifndef STASSID
 #define STASSID "Private123"
 #define STAPSK  "19911991"
 #endif
+#ifdef ESP8266
 
+#include <Ticker.h>
+Ticker display_ticker;
+#define P_LAT 16
+#define P_A 5
+#define P_B 4
+#define P_C 15
+#define P_D 12
+#define P_E 0
+#define P_OE 2
+
+#endif
+uint8_t display_draw_time=0;
+
+PxMATRIX display(32,32,P_LAT, P_OE,P_A,P_B,P_C,P_D);
+// Some standard colors
+uint16_t myRED = display.color565(255, 0, 0);
+uint16_t myGREEN = display.color565(0, 255, 0);
+uint16_t myBLUE = display.color565(0, 0, 255);
+uint16_t myWHITE = display.color565(255, 255, 255);
+uint16_t myYELLOW = display.color565(255, 255, 0);
+uint16_t myCYAN = display.color565(0, 255, 255);
+uint16_t myMAGENTA = display.color565(255, 0, 255);
+uint16_t myBLACK = display.color565(0, 0, 0);
+
+uint16 myCOLORS[8] = {myRED, myGREEN, myBLUE, myWHITE, myYELLOW, myCYAN, myMAGENTA, myBLACK};
 const char* ssid = STASSID;
 const char* password = STAPSK;
 
@@ -188,14 +216,30 @@ const char MAIN_page[] PROGMEM = R"=====(
 ESP8266WebServer server(80);
 
 const int led = 13;
+void display_updater()
+{
 
+  display.display(70);
+
+}
 void handleRoot() {
   digitalWrite(LED_BUILTIN, LOW);   // Turn the LED on (Note that LOW is the voltage level
   delay(1000);
   server.send(200, "text/plain", "hello from esp8266!");
   digitalWrite(LED_BUILTIN, HIGH);
 }
-
+void drawImage(int x, int y, uint16_t *image)
+{
+  
+  int width = 32;
+  int height = 32;
+  
+  for (int xx = 0; xx < height * width; xx++)
+  {
+    display.drawPixel(xx % width + x , xx / width + y, image[xx]);
+  }
+  
+}
 void handleNotFound() {
   digitalWrite(led, 1);
   String message = "File Not Found\n\n";
@@ -222,6 +266,11 @@ void setup(void) {
   WiFi.begin(ssid, password);
   Serial.println("");
 
+  display.begin(16);
+  display.clearDisplay();
+  display.display(0);
+  display_ticker.attach(0.002, display_updater);
+  display.clearDisplay();
   // Wait for connection
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
@@ -250,21 +299,27 @@ void setup(void) {
 
   server.on("/call", HTTP_POST, []() {
     if(server.arg(0) == "1") {
+      drawImage(0, 0, SMILE);
       Serial.println("ici 1");
     }
     else if(server.arg(0) == "2") {
+      drawImage(0, 0, UNHAPPYSMILE);
       Serial.println("ici 2");
     }
     else if(server.arg(0) == "3") {
+      drawImage(0, 0, NEUTRALSMILE);
       Serial.println("ici 3");
     }
     else if(server.arg(0) == "4") {
+      drawImage(0, 0, THUMBSUP);
       Serial.println("ici 4");
     }
     else if(server.arg(0) == "5") {
+      drawImage(0, 0, THUMBSDOWN);
       Serial.println("ici 5");
     }
     else if(server.arg(0) == "6") {
+      drawImage(0, 0, FUCKYOU);
       Serial.println("ici 6");
     }
   });
