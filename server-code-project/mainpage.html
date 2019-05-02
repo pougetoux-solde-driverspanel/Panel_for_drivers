@@ -6,6 +6,25 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
         <script type="text/javascript" language="javascript">
+            $(document).ready(function() {
+                document.getElementById("colorpicker").onchange = function() {
+                    backRGB = this.value;
+                    console.log(backRGB);
+                    
+                    for(var i = 0; i < 32; i++) {
+                        for(var j = 0; j < 32; j++) {
+                            var color = $("#griddiv")[0].children[0].children[i].children[j].style.backgroundColor;
+                            if(color == ""){
+                                continue;
+                            }
+                            else {
+                                $("#griddiv")[0].children[0].children[i].children[j].style.backgroundColor = backRGB;
+                            }
+                        }
+                    }
+                }
+            });
+
             function clickableGrid( rows, cols, callback ){
                 var grid = document.createElement('table');
                 grid.className = 'grid';
@@ -28,7 +47,12 @@
                 document.getElementById("griddiv").innerHTML = "";
 
                 var grid = clickableGrid(32,32,function(el,row,col){
-                    el.style.backgroundColor = $("#colorpicker")[0].value;
+                    if(el.style.backgroundColor == "") {
+                        el.style.backgroundColor = $("#colorpicker")[0].value;    
+                    }
+                    else {
+                        el.style.backgroundColor = "";
+                    }
                 });
 
                 $("#griddiv")[0].appendChild(grid);
@@ -40,19 +64,25 @@
                 var buttonid = $("#selectedbutton").val();
 
                 var colors = [];
+                
+                colors.push($("#colorpicker")[0].value);
 
                 for(var i = 0; i < 32; i++) {
                     var row = [];
                     for(var j = 0; j < 32; j++) {
                         var color = $("#griddiv")[0].children[0].children[i].children[j].style.backgroundColor;
-                        if(color == "") color = "rgb(0, 0, 0)";
-
-                        var colorArray = color.split("(")[1].split(")")[0].split(",");
-
-                        row.push({r: colorArray[0], g: colorArray[1].split(" ")[1], b: colorArray[2].split(" ")[1]});
+                        if(color == "") {
+                            color = 0;
+                        }
+                        else {
+                            color = 1;
+                        }
+                        row.push(color);
                     }
                     colors.push(row);
                 }
+                
+                console.log(colors);
 
                 $.ajax({
                     url: "",
@@ -62,12 +92,11 @@
             }
 
             function selectoption(button) {
-                console.log("pilou");
                 $.ajax({
-                    url: "",
-                }).done(function(data) {
-
-                });
+                      type: "POST",
+                      url: "http://192.168.43.38/call",
+                      data: {"selected": button}
+                  });
             }
         </script>
     </head>
@@ -128,8 +157,7 @@
                     </div>
                     <div class="modal-body">
                         <div>
-                            <input type="color" id="colorpicker" name="colorpicker"
-                                   value="#e66465">
+                            <input type="color" id="colorpicker" name="colorpicker" value="#e66465">
                             <label for="head">Choix de la couleur</label>
                         </div>
                         <div id="griddiv"></div>
