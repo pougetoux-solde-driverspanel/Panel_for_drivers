@@ -11,13 +11,186 @@
 const char* ssid = STASSID;
 const char* password = STAPSK;
 
+//---------------------------------------------------------------
+//Our HTML webpage contents in program memory
+const char MAIN_page[] PROGMEM = R"=====(
+  <!DOCTYPE html>
+  <html>
+      <head>
+          <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+          <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+          <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+          <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+          <script type="text/javascript" language="javascript">
+              function clickableGrid( rows, cols, callback ){
+                  var grid = document.createElement('table');
+                  grid.className = 'grid';
+                  for (var r=0;r<rows;++r){
+                      var tr = grid.appendChild(document.createElement('tr'));
+                      for (var c=0;c<cols;++c){
+                          var cell = tr.appendChild(document.createElement('td'));
+                          cell.addEventListener('click',(function(el,r,c){
+                              return function(){
+                                  callback(el,r,c);
+                              }
+                          })(cell,r,c),false);
+                      }
+                  }
+                  return grid;
+              }  
+  
+              function openmodal(button) {
+                  $("#selectedbutton").val(button);
+                  document.getElementById("griddiv").innerHTML = "";
+  
+                  var grid = clickableGrid(32,32,function(el,row,col){
+                      el.style.backgroundColor = $("#colorpicker")[0].value;
+                  });
+  
+                  $("#griddiv")[0].appendChild(grid);
+  
+                  $('#exampleModal').modal('show')
+              }
+  
+              function saveschema() {
+                  var buttonid = $("#selectedbutton").val();
+  
+                  var colors = [];
+  
+                  for(var i = 0; i < 32; i++) {
+                      var row = [];
+                      for(var j = 0; j < 32; j++) {
+                          var color = $("#griddiv")[0].children[0].children[i].children[j].style.backgroundColor;
+                          if(color == "") color = "rgb(0, 0, 0)";
+  
+                          var colorArray = color.split("(")[1].split(")")[0].split(",");
+  
+                          row.push({r: colorArray[0], g: colorArray[1].split(" ")[1], b: colorArray[2].split(" ")[1]});
+                      }
+                      colors.push(row);
+                  }
+  
+                  $.ajax({
+                      url: "",
+                  }).done(function(data) {
+                      
+                  });
+              }
+  
+              function selectoption(button) {
+                  $.ajax({
+                      url: "",
+                  }).done(function(data) {
+                      
+                  });
+              }
+          </script>
+      </head>
+      <style>
+          html, body {
+              height: 100%;
+              margin: 0px;
+          }
+  
+          #buttons-column { 
+              width: 50%;
+              margin-left: 25%;
+              padding-top: 10%;
+              height: 40%;
+              display: flex;
+              flex-direction: column;
+          }
+          .buttons-row {
+              display: flex;
+              flex: 1;
+          }
+          .spebutton {
+              margin: 10px;
+              flex-basis: 30%;
+              flex: 1;
+          }
+          #footer{
+              background:#ccc;
+              position:absolute;
+              bottom:0;
+              width:100%;
+              height:10%;
+              padding-top: 1%;
+              padding-bottom: 1%;
+              text-align: center;
+          }
+          .editbutton {
+              width: 15%;
+          }
+          .grid { margin:1em auto; border-collapse:collapse }
+          .grid td {
+              cursor:pointer;
+              width:15px; height:15px;
+              border:1px solid #ccc;
+              background-color: black;
+          }
+      </style>
+  
+      <body>
+          <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+              <div class="modal-dialog" role="document">
+                  <div class="modal-content">
+                      <div class="modal-header">
+                          <h5 class="modal-title" id="exampleModalLabel">Modification du motif du bouton</h5>
+                          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                              <span aria-hidden="true">&times;</span>
+                          </button>
+                      </div>
+                      <div class="modal-body">
+                          <div>
+                              <input type="color" id="colorpicker" name="colorpicker"
+                                     value="#e66465">
+                              <label for="head">Choix de la couleur</label>
+                          </div>
+                          <div id="griddiv"></div>
+                      </div>
+                      <div class="modal-footer">
+                          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                          <input type="hidden" id="selectedbutton">
+                          <button type="button" class="btn btn-primary" onclick="saveschema()">Save changes</button>
+                      </div>
+                  </div>
+              </div>
+          </div>
+  
+          <div id="buttons-column">
+              <div class="buttons-row">
+                  <button class="spebutton" id="button1" onclick="selectoption(1)">1</button>
+                  <button class="spebutton" id="button2" onclick="selectoption(2)">2</button>
+                  <button class="spebutton" id="button3" onclick="selectoption(3)">3</button>
+              </div>
+              <div class="buttons-row">
+                  <button class="spebutton" id="button4" onclick="selectoption(4)">4</button>
+                  <button class="spebutton" id="button5" onclick="selectoption(5)">5</button>
+                  <button class="spebutton" id="button6" onclick="selectoption(6)">6</button>
+              </div>
+          </div>
+  
+          <div id="footer">
+              <button type="button" class="btn btn-primary editbutton" onclick="openmodal(1)">edit 1</button>
+              <button type="button" class="btn btn-primary editbutton" onclick="openmodal(2)">edit 2</button>
+              <button type="button" class="btn btn-primary editbutton" onclick="openmodal(3)">edit 3</button>
+              <button type="button" class="btn btn-primary editbutton" onclick="openmodal(4)">edit 4</button>
+              <button type="button" class="btn btn-primary editbutton" onclick="openmodal(5)">edit 5</button>
+              <button type="button" class="btn btn-primary editbutton" onclick="openmodal(6)">edit 6</button>
+          </div>
+      </body>
+  </html>
+)=====";
+//---------------------------------------------------------------
+
 ESP8266WebServer server(80);
 
 const int led = 13;
 
 void handleRoot() {
   digitalWrite(LED_BUILTIN, LOW);   // Turn the LED on (Note that LOW is the voltage level
-  delay(1000);                      
+  delay(1000);
   server.send(200, "text/plain", "hello from esp8266!");
   digitalWrite(LED_BUILTIN, HIGH);
 }
@@ -40,7 +213,7 @@ void handleNotFound() {
 }
 
 void setup(void) {
-  pinMode(LED_BUILTIN, OUTPUT); 
+  pinMode(LED_BUILTIN, OUTPUT);
   pinMode(led, OUTPUT);
   digitalWrite(led, 0);
   Serial.begin(115200);
@@ -67,6 +240,11 @@ void setup(void) {
 
   server.on("/inline", []() {
     server.send(200, "text/plain", "this works as well");
+  });
+
+  server.on("/mainpage", []() {
+    String s = MAIN_page;
+    server.send(200, "text/html", s);
   });
 
   server.onNotFound(handleNotFound);
