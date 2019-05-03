@@ -49,7 +49,7 @@ For the arduino part, it can be plugged with a micro-usb to some electrical outl
 ### PxMatrix  
 
 We use this library to control the led matrix panel.  
-It really suited our configuration because it's for a 32x32/64x32 led panel coupled with an ESP8266.
+It really suited our configuration because it's for a 32x32/64x32 led panel coupled with an ESP8266.  
 Furthermore, it include a tutorial to manage the cabling of the project, wich really help us to make it work.
 
 __Link__ : https://github.com/2dom/PxMatrix
@@ -58,6 +58,29 @@ __Link__ : https://github.com/2dom/PxMatrix
 
 For the ESP8266 part, we use the tutorial of our project teacher, which explain what libraries to install and how to install it to connect the ESP8266 to the computer. The libraries installed during this tutorial contains all of the examples needed to host a website on the arduino.
 
-__Link__ : https://github.com/honnet/itp
+__Link__ : https://github.com/honnet/itp  
+
+
+## Cabling
+
+### Led panel  
+
+![led panel](https://zupimages.net/up/19/18/lo90.png)  
+
+As we can see, the cabling follow the tutorial of __PxMatrix__ : the RGB are plugged into the output (except for the R1 which is plugged into the arduino), and all the other cables are plugged into the ESP8266.  
+Also, there is the two cables (positive/negative) of the alimentation screw into the panel.
+
+### ESP8266  
+
+![esp](https://zupimages.net/up/19/18/dfo2.png)  
+
+This is the arduino part of the cabling. It is alimented with a micro-usb, and every cable (except for the black of the ground) are plugged into the led panel (following the cabling given in the library __PxMatrix__).
+
+### Breadbox
+
+![breadbox](https://zupimages.net/up/19/18/n924.png)  
+
+Here is the part where ground cables are connected. One is pointing to the ground of the arduino, and the other are pointing to the ground of the led panel (3 cables).
+
 
 ## WebSite
