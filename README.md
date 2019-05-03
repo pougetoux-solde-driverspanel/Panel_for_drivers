@@ -80,7 +80,7 @@ This is the arduino part of the cabling. It is alimented with a micro-usb, and e
 
 ![breadbox](https://zupimages.net/up/19/18/n924.png)  
 
-Here is the part where ground cables are connected. One is pointing to the ground of the arduino, and the other are pointing to the ground of the led panel (3 cables).
+Here is the part where ground cables are connected. One is pointing to the ground of the arduino, and the others are pointing to the ground of the led panel (3 cables).
 
 ## Code
 
@@ -109,26 +109,29 @@ At the top of the file there is theses includes. The network name is contained i
 ### Changing IP in AJAX Request  
 
 ```
-$.ajax({
-    type: "POST",
-    url: "http://192.168.43.38/modify",
-    data: {"selected": buttonid, "color": $("#colorpicker")[0].value, "colors": JSON.stringify(colors)}
-});
+const ip = "http://192.168.43.38/";
 ``` 
 
-There is two AJAX request, at line 298 and 306, that point to the same server. One allow the user to call a pattern (it will print on the panel), and the other to modify a pattern (change the pattern in memory).  
-The IP of the server is hard coded, so you need to change it to your ESP8266 IP if you want it to work for you.  
+There is three AJAX request that point to the same server. Instead of hard-coding the ip for each, we use a constant named ip at the start of the javascript part (line 170).
+You need to change it to your ESP8266 IP if you want it to work for you.  
 To get the IP :
 * Televerse the code in the ESP
 * Open the Serial port
 * See the IP be printed in it
-* Change it in the code at line 300 and 309
+* Change it in the code at line 170
 * Televerse again the code in the ESP  
 
 __Care__ : each time you connect the arduino to a new network, the ip need to be changed.
 
 ## Website
 
-Now that the code is televerses inside the ESP8266, the main page of the website is accessible at http://your_ip/mainpage.  
+Now that the code is televersed inside the ESP8266, the main page of the website is accessible at http://your_ip/mainpage.  
 __Note__ : You should be on the same network as the arduino for you to access the website 
+
+## Opening
+
+To transfer data, we used a website hard-coded in html/css/jquery inside the .ino file. Everytime an user call for the mainpage, the server send a string that contains all this code. The jquery rendered in the browser make ajax request into the same server (so no problem of CORS requests), which are received by the server on the ESP8266.  
+This technique is really easy to proceed and we had results very quick, but there is an important problem which forced us to reformat our code multiple times : we could'nt send very much data between jquery and the server. So it was not possible for us to transfer a design with multiple colors, and we were forced to make only monochrom pattern.    
+
+One of the multiple solutions that we could use if we had more time is to find a server that allow the transfer of bigger data, or have a configuration file that contain the maximum length of sent data and can be modified. An other could have been to separate our requests to send only a line each time. We tried that last solution, it worked but it was very slow, so we make the choice to keep eficacity more than beauty. Finally, the solution could be to use a different arduino, much faster, with an external wifi module. Like that, there is no problem of rapidity and any architecture would have worked !
 
