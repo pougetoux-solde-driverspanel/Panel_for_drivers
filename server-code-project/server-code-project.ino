@@ -5,9 +5,12 @@
 #include <PxMatrix.h>
 #include "DefaultImages.h"
 #include <Arduino_JSON.h>
+#include <FS.h>
 #ifndef STASSID
-#define STASSID "Private123"
-#define STAPSK  "19911991"
+//#define STASSID "Private123"
+//#define STAPSK  "19911991"
+#define STASSID "Robin"
+#define STAPSK  "0123456789"
 #endif
 #ifdef ESP8266
 
@@ -39,7 +42,18 @@ uint16_t myBLACK = display.color565(0, 0, 0);
 uint16 myCOLORS[8] = {myRED, myGREEN, myBLUE, myWHITE, myYELLOW, myCYAN, myMAGENTA, myBLACK};
 const char* ssid = STASSID;
 const char* password = STAPSK;
-
+uint16_t custom1[1024];
+uint16_t custom2[1024];
+uint16_t custom3[1024];
+uint16_t custom4[1024];
+uint16_t custom5[1024];
+uint16_t custom6[1024];
+bool custom1Bool = false;
+bool custom2Bool = false;
+bool custom3Bool = false;
+bool custom4Bool = false;
+bool custom5Bool = false;
+bool custom6Bool = false;
 //---------------------------------------------------------------
 //Our HTML webpage contents in program memory
 const char MAIN_page[] PROGMEM = R"=====(
@@ -297,7 +311,7 @@ const char MAIN_page[] PROGMEM = R"=====(
 
                 $.ajax({
                     type: "POST",
-                    url: "http://192.168.43.38/modify",
+                    url: "http://192.168.43.46/modify",
                     data: {"selected": buttonid, "color": $("#colorpicker")[0].value, "colors": JSON.stringify(colors)}
                 });
             }
@@ -305,7 +319,7 @@ const char MAIN_page[] PROGMEM = R"=====(
             function selectoption(button) {
                 $.ajax({
                     type: "POST",
-                    url: "http://192.168.43.38/call",
+                    url: "http://192.168.43.46/call",
                     data: {"selected": button}
                 });
             }
@@ -381,7 +395,61 @@ void handleNotFound() {
   server.send(404, "text/plain", message);
   digitalWrite(led, 0);
 }
-
+void copyImage(uint16_t *dest, uint16_t *source)
+{
+  for (int i = 0; i < 1024; ++i)
+  {
+    dest[i] = source[i]; 
+  }
+}
+void saveImage(String buttonId, uint16_t *image)
+{
+  drawImage(0, 0, image);
+  int id = buttonId.toInt();
+  if (id==1)
+  {
+    copyImage(custom1, image);
+    custom1Bool = true;
+  }
+   
+  else if (id==2)
+  {
+    copyImage(custom2, image);
+    custom2Bool = true;
+  }
+  else if (id==3)
+  {
+    copyImage(custom3, image);
+    custom3Bool = true;
+  }
+  else if (id==4)
+  {
+    copyImage(custom4, image);
+    custom4Bool = true;
+  }
+  else if (id==5)
+  {
+    copyImage(custom5, image);
+    custom5Bool = true;
+  }
+  else if (id==6)
+  {
+    copyImage(custom6, image);
+    custom6Bool = true;
+  }
+  
+  File f = SPIFFS.open("/test.txt", "w");
+  if (!f) {
+      Serial.println("file open failed");
+      return;
+  }
+  for (int i = 0; i < 1024; ++i)
+  {
+    f.println(image[i]);
+  }
+   Serial.println(f.read());
+  f.close();
+}
 void setup(void) {
   pinMode(LED_BUILTIN, OUTPUT);
   pinMode(led, OUTPUT);
@@ -391,6 +459,8 @@ void setup(void) {
   WiFi.begin(ssid, password);
   Serial.println("");
 
+  bool spiffOpen = SPIFFS.begin();
+   Serial.print("Montage de Spiff : " + spiffOpen);
   display.begin(16);
   display.clearDisplay();
   display.display(0);
@@ -424,27 +494,45 @@ void setup(void) {
 
   server.on("/call", HTTP_POST, []() {
     if(server.arg(0) == "1") {
-      drawImage(0, 0, SMILE);
+      if (custom1Bool) 
+        drawImage(0, 0, custom1);
+      else
+        drawImage(0, 0, SMILE);
       Serial.println("ici 1");
     }
     else if(server.arg(0) == "2") {
-      drawImage(0, 0, UNHAPPYSMILE);
+      if (custom2Bool)
+        drawImage(0, 0, custom2);
+      else
+        drawImage(0, 0, UNHAPPYSMILE);
       Serial.println("ici 2");
     }
     else if(server.arg(0) == "3") {
-      drawImage(0, 0, NEUTRALSMILE);
+      if (custom3Bool)
+        drawImage(0, 0, custom3);
+      else
+        drawImage(0, 0, NEUTRALSMILE);
       Serial.println("ici 3");
     }
     else if(server.arg(0) == "4") {
-      drawImage(0, 0, THUMBSUP);
+      if (custom4Bool)
+        drawImage(0, 0, custom4);
+      else
+        drawImage(0, 0, THUMBSUP);
       Serial.println("ici 4");
     }
     else if(server.arg(0) == "5") {
-      drawImage(0, 0, THUMBSDOWN);
+      if (custom5Bool)
+        drawImage(0, 0, custom5);
+      else
+        drawImage(0, 0, THUMBSDOWN);
       Serial.println("ici 5");
     }
     else if(server.arg(0) == "6") {
-      drawImage(0, 0, FUCKYOU);
+      if (custom6Bool)
+        drawImage(0, 0, custom6);
+      else
+        drawImage(0, 0, FUCKYOU);
       Serial.println("ici 6");
     }
   });
@@ -461,7 +549,8 @@ void setup(void) {
         image[i]=0x07E0;
       
     }
-    drawImage(0, 0, image);
+    //drawImage(0, 0, image);
+    saveImage(server.arg(0), image);
   });
 
   server.onNotFound(handleNotFound);
