@@ -14,6 +14,15 @@ It should be possible for the user to control the led panel with the help of a w
 With this website, the user will be able to call 6 patterns (with the help of buttons), that will be transmitted to the led panel.  
 6 others buttons will be dedicated to the modification of this patterns individually. The user can modify a pattern by choosing a color, and selecting each pixel that should display this color. For a reason of simplicity, only one color will be displayed in the led panel. Then, he'll can save his modification, and on the next click on the button of this pattern, the new one will be displayed.
 
+## Realisation
+
+Here we can see how is it possible to call a pattern on the website and it is displayed on the led panel :  
+
+
+And here we can see the adding of a new pattern and its association with a button. Then, clicking on the button display the new pattern on the led panel :  
+
+![add](https://zupimages.net/up/19/18/5o1o.gif)
+
 ## Equipment
 
 ### Led Panel
