@@ -22,7 +22,7 @@ With this website, the user will be able to call 6 patterns (with the help of bu
 
 __Link__ : https://hackspark.fr/fr/affichage/986-32x32-rgb-led-matrix-panel-p4-high-resolutions.html  
 
-We choose this led panel for our project because we were next to the store "HackSpark" that sell it, and it was pretty easy to use a all in one led matrix panel, rather than to make our own. Indeed, some soldering and electric cabling are very time consuming and our delay for this project was about 4 days, so it was the perfect option.
+We choose this led panel for our project because we were next to the store "HackSpark" that sell it, and it was pretty easy to use a all in one led matrix panel, rather than to make our own. Indeed, some soldering and electric cabling are very time consuming and our delay for this project was about 4 days, so it was the perfect option. 32x32 was enough for our utilisation, because the led are very brightful and it's not needed to have a big panel for the other drivers to see it.
 
 ### ESP8266
 
@@ -44,6 +44,20 @@ We plug into the port of this alimentation a converter that allow us to directly
 
 For the arduino part, it can be plugged with a micro-usb to some electrical outlet, to a computer, etc.
 
-## Library
+## Libraries
+
+### PxMatrix  
+
+We use this library to control the led matrix panel.  
+It really suited our configuration because it's for a 32x32/64x32 led panel coupled with an ESP8266.
+Furthermore, it include a tutorial to manage the cabling of the project, wich really help us to make it work.
+
+__Link__ : https://github.com/2dom/PxMatrix
+
+### ESP8266
+
+For the ESP8266 part, we use the tutorial of our project teacher, which explain what libraries to install and how to install it to connect the ESP8266 to the computer. The libraries installed during this tutorial contains all of the examples needed to host a website on the arduino.
+
+__Link__ : https://github.com/honnet/itp
 
 ## WebSite
