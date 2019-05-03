@@ -284,6 +284,7 @@ const char MAIN_page[] PROGMEM = R"=====(
                 }
 
                 console.log(colors);
+                console.log(JSON.stringify(colors));
 
                 $.ajax({
                     type: "POST",
@@ -380,7 +381,39 @@ void copyImage(uint16_t *dest, uint16_t *source)
 }
 void saveImage(String buttonId, uint16_t *image)
 {
- 
+   drawImage(0, 0, image);
+  int id = buttonId.toInt();
+  if (id==1)
+  {
+    copyImage(custom1, image);
+    custom1Bool = true;
+  }
+   
+  else if (id==2)
+  {
+    copyImage(custom2, image);
+    custom2Bool = true;
+  }
+  else if (id==3)
+  {
+    copyImage(custom3, image);
+    custom3Bool = true;
+  }
+  else if (id==4)
+  {
+    copyImage(custom4, image);
+    custom4Bool = true;
+  }
+  else if (id==5)
+  {
+    copyImage(custom5, image);
+    custom5Bool = true;
+  }
+  else if (id==6)
+  {
+    copyImage(custom6, image);
+    custom6Bool = true;
+  }
 }
 void setup(void) {
   pinMode(LED_BUILTIN, OUTPUT);
@@ -496,22 +529,31 @@ void setup(void) {
         drawImage(0, 0, FUCKYOU);
       Serial.println("ici 6");
     }
+   // server.send(200, "text/plain", "true");
   });
 
   server.on("/modify", HTTP_POST, []() {
     Serial.println(server.arg(1));
+    Serial.println("toto");
     Serial.println(server.arg(2));
+    Serial.println("toto");
     uint16_t image[1024];
     for (int i = 0; i < 1024; ++i)
     {
-      if ((int)(server.arg(2)[2*i+1]) - 48 == 0)
+      //String tmp = server.arg(2)[2*i+1];
+      //Serial.println(server.arg(2)[2*i+1]);
+      if ((int)(server.arg(2)[2*i+1])-48 == 0)
         image[i]=0;
       else
+      {
         image[i]=0x07E0;
+      }
+        //image[i]=0x07E0;
       
     }
     //drawImage(0, 0, image);
     saveImage(server.arg(0), image);
+    //server.send(200, "text/plain", "true");
   });
 
   server.onNotFound(handleNotFound);
