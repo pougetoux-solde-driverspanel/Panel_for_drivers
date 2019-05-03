@@ -6,10 +6,10 @@
 //#include <FS.h>
 #include "DefaultImages.h"
 #ifndef STASSID
-//#define STASSID "Private123"
-//#define STAPSK  "19911991"
-#define STASSID "Robin"
-#define STAPSK  "0123456789"
+#define STASSID "Private123"
+#define STAPSK  "19911991"
+//#define STASSID "Robin"
+//#define STAPSK  "0123456789"
 #endif
 #ifdef ESP8266
 
@@ -437,9 +437,7 @@ void setup(void) {
 
   server.on("/mainpage", []() {
     String s = MAIN_page;
-    
-    server.send_P(200, "text/html", MAIN_page, 20598);
-    
+    server.send(200, "text/html", MAIN_page);
   });
   
 
