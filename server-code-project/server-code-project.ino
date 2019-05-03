@@ -411,6 +411,83 @@ void saveImage(String buttonId, uint16_t *image)
     custom6Bool = true;
   }
 }
+int  hexaToInt(String hex)
+{
+  Serial.println("hex");
+  Serial.println(hex);
+  int a = 10;
+  int b = 11;
+  int c = 12;
+  int d = 13;
+  int e = 14;
+  int f = 15;
+
+  int num1 = 0;
+  int num2 = 0;
+  if (hex[0] == 'a')
+    num1 = 16 * a;
+  else if (hex[0] == 'b')
+    num1 = 16 * b;
+  else if (hex[0] == 'c')
+    num1 = 16 * c;
+  else if (hex[0] == 'd')
+   num1 = 16 * d;
+  else if (hex[0] == 'e')
+    num1 = 16 * e;
+  else if (hex[0] == 'f')
+    num1 = 16 * f;
+  else 
+  {
+    Serial.println("ELSE");
+    Serial.println(hex[0]);
+    Serial.println((int)hex[0]);
+    Serial.println("ELSE");
+    num1 = 16 * ((int)hex[0] - 48);
+  }
+   
+
+   if (hex[1] == 'a')
+    num2 = 1 * a;
+  else if (hex[1] == 'b')
+    num2 = 1 * b;
+  else if (hex[1] == 'c')
+    num2 = 1 * c;
+  else if (hex[1] == 'd')
+   num2 = 1 * d;
+  else if (hex[1] == 'e')
+    num2 = 1 * e;
+  else if (hex[1] == 'f')
+    num2 = 1 * f;
+  else 
+  {
+    Serial.println("ELSE");
+    Serial.println(hex[0]);
+    Serial.println((int)hex[0]);
+    Serial.println("ELSE");
+    num2 = (int)hex[1] - 48;
+  }
+Serial.println("num1");
+Serial.println(num1);
+Serial.println("num2");
+Serial.println(num2);
+    
+   return num1 + num2;
+    
+}
+uint16_t getRGBColorFromHexa(String hexacolor)
+{
+  String red = hexacolor.substring(1,3);
+  String green = hexacolor.substring(3,5);
+  String blue = hexacolor.substring(5,7);
+  int redNb = hexaToInt(red);
+  int greenNb = hexaToInt(green);
+  int blueNb = hexaToInt(blue);
+  Serial.println("COLORS");
+  Serial.println(redNb);
+  Serial.println(greenNb);
+  Serial.println(blueNb);
+  return display.color565(redNb, greenNb, blueNb);
+}
 void setup(void) {
   pinMode(LED_BUILTIN, OUTPUT);
   pinMode(led, OUTPUT);
@@ -525,33 +602,56 @@ void setup(void) {
         drawImage(0, 0, FUCKYOU);
       Serial.println("ici 6");
     }
-   // server.send(200, "text/plain", "true");
+    server.send(200, "text/plain", "true");
   });
 
   server.on("/modify", HTTP_POST, []() {
-    Serial.println(server.args());
+    //Serial.println(server.args());
     Serial.println(server.arg(1));
-    Serial.println("toto");
-    Serial.println(server.arg(2));
-    Serial.println(server.arg(2)[0]);
-    Serial.println("toto");
-    /*uint16_t image[1024];
+    //Serial.println("toto");
+    //Serial.println(server.arg(2));
+    
+    //Serial.println("toto");
+    String caseListString = server.arg(2);
+    int cases[1024];
+    int casesLength = 0;
+    int pos = 0;
+    int lastComa = 1;
+    caseListString[0] = '-';
+    caseListString[caseListString.length()-1] = '-';
+    Serial.println("caseListString.length()");
+    Serial.println(caseListString.length());
+    Serial.println("caseListString");
+    Serial.println(caseListString);
+    for (int i = 1; i < caseListString.length() - 1; ++i)
+    {
+      if (caseListString[i] != ',')
+      {
+         continue;
+      }
+      cases[casesLength] = caseListString.substring(lastComa,i).toInt();
+      ++casesLength;
+      ++pos;
+      lastComa=i+1;
+    }
+    
+    
+    
+    uint16_t image[1024];
+    int pos2 = 0;
     for (int i = 0; i < 1024; ++i)
     {
-      //String tmp = server.arg(2)[2*i+1];
-      //Serial.println(server.arg(2)[2*i+1]);
-      if ((int)(server.arg(2)[2*i+1])-48 == 0)
-        image[i]=0;
-      else
-      {
-        image[i]=0x07E0;
-      }
-        //image[i]=0x07E0;
-      
+      image[i]=0;
     }
-    //drawImage(0, 0, image);
+    uint16_t myColor = getRGBColorFromHexa(server.arg(1));
+    
+    for (int i = 0; i < casesLength; ++i)
+    {
+      //image[cases[i]]=0x07E0;
+      image[cases[i]]=myColor;
+    }
     saveImage(server.arg(0), image);
-    //server.send(200, "text/plain", "true");*/
+    server.send(200, "text/plain", "true");
   });
 
   server.onNotFound(handleNotFound);
