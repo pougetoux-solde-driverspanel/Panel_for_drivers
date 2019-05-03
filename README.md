@@ -61,7 +61,7 @@ For the ESP8266 part, we use the tutorial of our project teacher, which explain 
 __Link__ : https://github.com/honnet/itp  
 
 
-## Cabling
+## Cabling  
 
 ### Led panel  
 
@@ -82,5 +82,53 @@ This is the arduino part of the cabling. It is alimented with a micro-usb, and e
 
 Here is the part where ground cables are connected. One is pointing to the ground of the arduino, and the other are pointing to the ground of the led panel (3 cables).
 
+## Code
 
-## WebSite
+The main file for the project is the server-code-project.ino (in the folder of the same name). It should then be televersed into the ESP8266.  
+There is 2 modifications that are needed for the project to work, before the televersing :
+
+### Changing network credentials  
+
+```
+#include <ESP8266WiFi.h>
+#include <WiFiClient.h> 
+#include <ESP8266WebServer.h>
+#include <ESP8266mDNS.h>
+#include <PxMatrix.h>
+#include "DefaultImages.h"
+#include <Arduino_JSON.h>
+#ifndef STASSID
+#define STASSID "Private123"
+#define STAPSK  "19911991"
+#endif
+#ifdef ESP8266
+```
+
+At the top of the file there is theses includes. The network name is contained in the STASSID, and the password in the STAPSK. To reproduce this project and before televersing the code, you need to modify these two constants to match your own network.
+
+### Changing IP in AJAX Request  
+
+```
+$.ajax({
+    type: "POST",
+    url: "http://192.168.43.38/modify",
+    data: {"selected": buttonid, "color": $("#colorpicker")[0].value, "colors": JSON.stringify(colors)}
+});
+``` 
+
+There is two AJAX request, at line 298 and 306, that point to the same server. One allow the user to call a pattern (it will print on the panel), and the other to modify a pattern (change the pattern in memory).  
+The IP of the server is hard coded, so you need to change it to your ESP8266 IP if you want it to work for you.  
+To get the IP :
+* Televerse the code in the ESP
+* Open the Serial port
+* See the IP be printed in it
+* Change it in the code at line 300 and 309
+* Televerse again the code in the ESP  
+
+__Care__ : each time you connect the arduino to a new network, the ip need to be changed.
+
+## Website
+
+Now that the code is televerses inside the ESP8266, the main page of the website is accessible at http://your_ip/mainpage.  
+__Note__ : You should be on the same network as the arduino for you to access the website 
+
