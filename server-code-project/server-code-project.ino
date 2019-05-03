@@ -167,9 +167,8 @@ const char MAIN_page[] PROGMEM = R"=====(
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
         <script type="text/javascript" language="javascript">
+            const ip = "http://192.168.43.38/";
             $(document).ready(function() {
-                
-                
                 document.getElementById("colorpicker").onchange = function() {
                     backRGB = this.value;
                     console.log(backRGB);
@@ -218,7 +217,7 @@ const char MAIN_page[] PROGMEM = R"=====(
             function callAndInit(name, color) {
               $.ajax({
                     type: "POST",
-                    url: "http://192.168.43.38/" + name
+                    url: ip + name
               }).done(function(data) {
                 console.log(data);
                     data.split(';').forEach(j => {
@@ -273,13 +272,10 @@ const char MAIN_page[] PROGMEM = R"=====(
                     for(var j = 0; j < 32; j++) {
                         var color = $("#griddiv")[0].children[0].children[i].children[j].style.backgroundColor;
                         if(color == "") {
-                            color = "0";
                         }
                         else {
-                            color = "1";
+                            colors += ((i*32 + j) + ",");
                         }
-
-                        colors += (color + ",");
                     }
                 }
 
@@ -288,7 +284,7 @@ const char MAIN_page[] PROGMEM = R"=====(
 
                 $.ajax({
                     type: "POST",
-                    url: "http://192.168.43.38/modify",
+                    url: ip + "modify",
                     data: {"selected": buttonid, "color": $("#colorpicker")[0].value, "colors": JSON.stringify(colors)}
                 });
             }
@@ -296,7 +292,7 @@ const char MAIN_page[] PROGMEM = R"=====(
             function selectoption(button) {
                 $.ajax({
                     type: "POST",
-                    url: "http://192.168.43.38/call",
+                    url: ip + "call",
                     data: {"selected": button}
                 });
             }
@@ -533,11 +529,13 @@ void setup(void) {
   });
 
   server.on("/modify", HTTP_POST, []() {
+    Serial.println(server.args());
     Serial.println(server.arg(1));
     Serial.println("toto");
     Serial.println(server.arg(2));
+    Serial.println(server.arg(2)[0]);
     Serial.println("toto");
-    uint16_t image[1024];
+    /*uint16_t image[1024];
     for (int i = 0; i < 1024; ++i)
     {
       //String tmp = server.arg(2)[2*i+1];
@@ -553,7 +551,7 @@ void setup(void) {
     }
     //drawImage(0, 0, image);
     saveImage(server.arg(0), image);
-    //server.send(200, "text/plain", "true");
+    //server.send(200, "text/plain", "true");*/
   });
 
   server.onNotFound(handleNotFound);
